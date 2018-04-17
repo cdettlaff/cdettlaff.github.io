@@ -1,12 +1,15 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoicG9wZ2lzIiwiYSI6Ik41WkZneEEifQ.8VV2htVHJgXwmtswK5Lq3g';
+mapboxgl.accessToken = 'pk.eyJ1IjoicG9ydGdpcyIsImEiOiJrbEEzV3JVIn0.O9iz-MI7OHXqyBXkS1pfog';
 var map = new mapboxgl.Map({
-    container: 'map', 
+    container: 'map',
     style: 'mapbox://styles/mapbox/light-v9',
-    center: [0, 0], 
-    zoom: 1, 
+    center: [0, 0],
+    zoom: 1,
     attributionControl: true,
-    preserveDrawingBuffer: true, 
+    preserveDrawingBuffer: true,
 });
+
+// handles click/touch event across devices 
+let touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
 
 // navigation controls
 map.addControl(new mapboxgl.NavigationControl()); // zoom controls
@@ -24,7 +27,7 @@ map.addControl(new mapboxgl.GeolocateControl());
 //This overides the Bootstrap modal "enforceFocus" to allow user interaction with main map
 $.fn.modal.Constructor.prototype.enforceFocus = function () { };
 
-// print function 
+// print function
 var printBtn = document.getElementById('mapboxgl-ctrl-print');
 var exportView = document.getElementById('export-map');
 
@@ -63,7 +66,7 @@ $('#clear_general').on('click', function (e) {
 });
 
 // Geocoder API
-// Geocoder API 
+// Geocoder API
 // Geocoder API
 var geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken
@@ -104,7 +107,7 @@ map.on('load', function () {
 // Coordinates Tool
 // Coordinates Tool
 // Coordinates Tool
-map.on('click', function (e) {
+map.on(touchEvent, function (e) {
     document.getElementById('info').innerHTML =
 
         JSON.stringify(e.lngLat, function (key, val) {
@@ -119,7 +122,7 @@ map.on('click', function (e) {
 //Layer Tree
 
 //Load Layers
-// Layers that load first will be at the bottom of the root directory within the Layer Tree 
+// Layers that load first will be at the bottom of the root directory within the Layer Tree
 
 var emptyGJ = {
     'type': 'FeatureCollection',
@@ -129,7 +132,7 @@ var emptyGJ = {
 map.on('load', function () {
 
     //monster layers
-    //monster layer sources 
+    //monster layer sources
     map.addSource('monster', { type: 'geojson', data: emptyGJ });
     map.addSource('mouth', { type: 'geojson', data: emptyGJ });
     map.addSource('water', { type: 'geojson', data: emptyGJ });
@@ -260,18 +263,18 @@ map.on('load', function () {
     });
 
 
+    //Layer Info function
+    //Layer Info function
+    //Layer Info function
+    //Layer Info function
 
-    //Layer Info function
-    //Layer Info function
-    //Layer Info function
-    //Layer Info function
-    map.on('click', function (e) {
+    map.on(touchEvent, function (e) {
 
         document.getElementById("layer-attribute").innerHTML = "";
 
     });
 
-    map.on('click', function (e) {
+    map.on(touchEvent, function (e) {
 
         var popup = new mapboxgl.Popup();
         var feature;
@@ -289,8 +292,8 @@ map.on('load', function () {
                   '<hr>' +
                   '<b>City: </b>' + feature.properties.name +
                   '<hr>' +
-				  '<b>Country: </b>' + feature.properties.sov0name +
-				  '<hr>' 
+                  '<b>Country: </b>' + feature.properties.sov0name +
+                  '<hr>'
         }
 
         if (map.queryRenderedFeatures(e.point, { layers: ['country'] }).length) {
@@ -303,7 +306,7 @@ map.on('load', function () {
               '<b>Port Name </b>' + feature.properties.admin +
               '<hr>' +
               '<b>Code: </b>' + feature.properties.adm0_a3 +
-              '<hr>' 
+              '<hr>'
         }
 
         //Monster - Layer Info
@@ -318,14 +321,14 @@ map.on('load', function () {
                   '<b>Name: </b>' + 'Mr. Claw'+
                   '<hr>' +
                   '<b>Place of Birth: </b>' + 'Atlantic Ocean' +
-			      '<hr>' +
+                  '<hr>' +
                   '<b>Likes: </b>' + 'Birthday Parties' +
-			      '<hr>' +
+                  '<hr>' +
                   '<b>Dislikes: </b>' + 'Seafood Festivals' +
-			      '<hr>'
+                  '<hr>'
         }
 
- 
+
         //Physical - Layer Info
         //Physical  - Layer Info
         if (map.queryRenderedFeatures(e.point, { layers: ['ocean'] }).length) {
@@ -347,11 +350,11 @@ map.on('load', function () {
                   '<h5>Major Rivers</h5>' +
                   '<hr>' +
                   '<b>Name: </b>' + feature.properties.name +
-                  '<hr>' 
+                  '<hr>'
         }
     });
 
-    //cursor = pointer on hover configuration 
+    //cursor = pointer on hover configuration
     map.on('mousemove', function (e) {
         var features = map.queryRenderedFeatures(e.point, {
             layers: ['ocean', 'river', 'country', 'populated', 'monster']
@@ -366,7 +369,7 @@ map.on('load', function () {
     //Highlight Features Function
 
     // Highligt Environmental
-    map.on("click", function (e) {
+    map.on(touchEvent, function (e) {
         var features = map.queryRenderedFeatures(e.point, { layers: ["populated"] });
 
         if (map.getLayer("populated_hl")) {
@@ -389,7 +392,7 @@ map.on('load', function () {
         }
     });
 
-    map.on("click", function (e) {
+    map.on(touchEvent, function (e) {
         var features = map.queryRenderedFeatures(e.point, { layers: ["country"] });
 
         if (map.getLayer("country_hl")) {
@@ -412,9 +415,9 @@ map.on('load', function () {
         }
     });
 
-   
+
     //Highlight - Monster
-    map.on("click", function (e) {
+    map.on(touchEvent, function (e) {
         var features = map.queryRenderedFeatures(e.point, { layers: ["monster"] });
 
         if (map.getLayer("monster_hl")) {
@@ -437,9 +440,9 @@ map.on('load', function () {
         }
     });
 
- 
+
     //Highlight - Physical
-    map.on("click", function (e) {
+    map.on(touchEvent, function (e) {
         var features = map.queryRenderedFeatures(e.point, { layers: ["river"] });
 
         if (map.getLayer("river_hl")) {
@@ -462,8 +465,8 @@ map.on('load', function () {
         }
     });
 
-   
-    map.on("click", function (e) {
+
+    map.on(touchEvent, function (e) {
         var features = map.queryRenderedFeatures(e.point, { layers: ["ocean"] });
 
         if (map.getLayer("ocean_hl")) {
@@ -488,8 +491,8 @@ map.on('load', function () {
 });
 
 
-// Directory Options 
-// Directory Options 
+// Directory Options
+// Directory Options
 // Directory Options - open or closed by defualt (true/false)
 
 var directoryOptions =
@@ -515,7 +518,7 @@ var directoryOptions =
 var layers =
 
 [
- 
+
     // Monster LAYER TREE CONFIG
     // Monster LAYER TREE CONFIG
     {
@@ -590,7 +593,7 @@ var layers =
         'path': 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_geography_marine_polys.geojson',
         'directory': 'Physical',
     },
-   
+
 ];
 
 
@@ -1008,135 +1011,881 @@ populatePalette();
 map.on('click', addEditLabels);
 
 
+// custom draw styles paramaters
+// custom draw styles paramaters
+// custom draw styles paramaters
+var drawFeatureID = '';
+var newDrawFeature = false;
+var trackDrawnPolygons = [];
+var getLastDrawnPoly = false;
 
 //Draw Tools function
 //Draw Tools function
-//Draw Tools function 
+//Draw Tools function
 var draw = new MapboxDraw({
+    // this is used to allow for custom properties for styling draw features
+    // it appends the word "user_" to the property
+    userProperties: true,
     displayControlsDefault: false,
     controls: {
         polygon: true,
         point: true,
         line_string: true,
         trash: true,
-    }
+    },
+    styles: [
+        // default themes provided by MB Draw
+        // default themes provided by MB Draw
+        // default themes provided by MB Draw
+        // default themes provided by MB Draw
+
+
+        {
+            'id': 'gl-draw-polygon-fill-inactive',
+            'type': 'fill',
+            'filter': ['all', ['==', 'active', 'false'],
+                ['==', '$type', 'Polygon'],
+                ['!=', 'mode', 'static']
+            ],
+            'paint': {
+                'fill-color': '#3bb2d0',
+                'fill-outline-color': '#3bb2d0',
+                'fill-opacity': 0.1
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-fill-active',
+            'type': 'fill',
+            'filter': ['all', ['==', 'active', 'true'],
+                ['==', '$type', 'Polygon']
+            ],
+            'paint': {
+                'fill-color': '#fbb03b',
+                'fill-outline-color': '#fbb03b',
+                'fill-opacity': 0.1
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-midpoint',
+            'type': 'circle',
+            'filter': ['all', ['==', '$type', 'Point'],
+                ['==', 'meta', 'midpoint']
+            ],
+            'paint': {
+                'circle-radius': 3,
+                'circle-color': '#fbb03b'
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-stroke-inactive',
+            'type': 'line',
+            'filter': ['all', ['==', 'active', 'false'],
+                ['==', '$type', 'Polygon'],
+                ['!=', 'mode', 'static']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': '#3bb2d0',
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-stroke-active',
+            'type': 'line',
+            'filter': ['all', ['==', 'active', 'true'],
+                ['==', '$type', 'Polygon']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': '#fbb03b',
+                'line-dasharray': [0.2, 2],
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-line-inactive',
+            'type': 'line',
+            'filter': ['all', ['==', 'active', 'false'],
+                ['==', '$type', 'LineString'],
+                ['!=', 'mode', 'static']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': '#3bb2d0',
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-line-active',
+            'type': 'line',
+            'filter': ['all', ['==', '$type', 'LineString'],
+                ['==', 'active', 'true']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': '#fbb03b',
+                'line-dasharray': [0.2, 2],
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-and-line-vertex-stroke-inactive',
+            'type': 'circle',
+            'filter': ['all', ['==', 'meta', 'vertex'],
+                ['==', '$type', 'Point'],
+                ['!=', 'mode', 'static']
+            ],
+            'paint': {
+                'circle-radius': 5,
+                'circle-color': '#fff'
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-and-line-vertex-inactive',
+            'type': 'circle',
+            'filter': ['all', ['==', 'meta', 'vertex'],
+                ['==', '$type', 'Point'],
+                ['!=', 'mode', 'static']
+            ],
+            'paint': {
+                'circle-radius': 3,
+                'circle-color': '#fbb03b'
+            }
+        },
+        {
+            'id': 'gl-draw-point-point-stroke-inactive',
+            'type': 'circle',
+            'filter': ['all', ['==', 'active', 'false'],
+                ['==', '$type', 'Point'],
+                ['==', 'meta', 'feature'],
+                ['!=', 'mode', 'static']
+            ],
+            'paint': {
+                'circle-radius': 5,
+                'circle-opacity': 1,
+                'circle-color': '#fff'
+            }
+        },
+        {
+            'id': 'gl-draw-point-inactive',
+            'type': 'circle',
+            'filter': ['all', ['==', 'active', 'false'],
+                ['==', '$type', 'Point'],
+                ['==', 'meta', 'feature'],
+                ['!=', 'mode', 'static']
+            ],
+            'paint': {
+                'circle-radius': 3,
+                'circle-color': '#3bb2d0'
+            }
+        },
+        {
+            'id': 'gl-draw-point-stroke-active',
+            'type': 'circle',
+            'filter': ['all', ['==', '$type', 'Point'],
+                ['==', 'active', 'true'],
+                ['!=', 'meta', 'midpoint']
+            ],
+            'paint': {
+                'circle-radius': 7,
+                'circle-color': '#fff'
+            }
+        },
+        {
+            'id': 'gl-draw-point-active',
+            'type': 'circle',
+            'filter': ['all', ['==', '$type', 'Point'],
+                ['!=', 'meta', 'midpoint'],
+                ['==', 'active', 'true']
+            ],
+            'paint': {
+                'circle-radius': 5,
+                'circle-color': '#fbb03b'
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-fill-static',
+            'type': 'fill',
+            'filter': ['all', ['==', 'mode', 'static'],
+                ['==', '$type', 'Polygon']
+            ],
+            'paint': {
+                'fill-color': '#404040',
+                'fill-outline-color': '#404040',
+                'fill-opacity': 0.1
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-stroke-static',
+            'type': 'line',
+            'filter': ['all', ['==', 'mode', 'static'],
+                ['==', '$type', 'Polygon']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': '#404040',
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-line-static',
+            'type': 'line',
+            'filter': ['all', ['==', 'mode', 'static'],
+                ['==', '$type', 'LineString']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': '#404040',
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-point-static',
+            'type': 'circle',
+            'filter': ['all',
+                ['==', 'mode', 'static'],
+                ['==', '$type', 'Point']
+            ],
+            'paint': {
+                'circle-radius': 5,
+                'circle-color': '#404040'
+            }
+        },
+
+        // end default themes provided by MB Draw
+        // end default themes provided by MB Draw
+        // end default themes provided by MB Draw
+        // end default themes provided by MB Draw
+
+
+
+
+        // new styles for toggling colors
+        // new styles for toggling colors
+        // new styles for toggling colors
+        // new styles for toggling colors
+
+        {
+            'id': 'gl-draw-polygon-fill-inactive-color-picker',
+            'type': 'fill',
+            'filter': ['all', ['==', 'active', 'false'],
+                ['==', '$type', 'Polygon'],
+                ['!=', 'mode', 'static'],
+                ['has', 'user_portColor']
+            ],
+            'paint': {
+                'fill-color': ['get', 'user_portColor'],
+                'fill-outline-color': ['get', 'user_portColor'],
+                'fill-opacity': 0.1
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-fill-active-color-picker',
+            'type': 'fill',
+            'filter': ['all', ['==', 'active', 'true'],
+                ['==', '$type', 'Polygon'],
+                ['has', 'user_portColor']
+            ],
+            'paint': {
+                'fill-color': ['get', 'user_portColor'],
+                'fill-outline-color': ['get', 'user_portColor'],
+                'fill-opacity': 0.1
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-midpoint-color-picker',
+            'type': 'circle',
+            'filter': ['all', ['==', '$type', 'Point'],
+                ['==', 'meta', 'midpoint']
+            ],
+            'paint': {
+                'circle-radius': 3,
+                'circle-color': '#fbb03b'
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-stroke-inactive-color-picker',
+            'type': 'line',
+            'filter': ['all', ['==', 'active', 'false'],
+                ['==', '$type', 'Polygon'],
+                ['!=', 'mode', 'static'],
+                ['has', 'user_portColor']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': ['get', 'user_portColor'],
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-stroke-active-color-picker',
+            'type': 'line',
+            'filter': ['all', ['==', 'active', 'true'],
+                ['==', '$type', 'Polygon'],
+                ['has', 'user_portColor']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': ['get', 'user_portColor'],
+                'line-dasharray': [0.2, 2],
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-line-inactive-color-picker',
+            'type': 'line',
+            'filter': ['all', ['==', 'active', 'false'],
+                ['==', '$type', 'LineString'],
+                ['!=', 'mode', 'static'],
+                ['has', 'user_portColor']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': ['get', 'user_portColor'],
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-line-active-color-picker',
+            'type': 'line',
+            'filter': ['all', ['==', '$type', 'LineString'],
+                ['==', 'active', 'true'],
+                ['has', 'user_portColor']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': ['get', 'user_portColor'],
+                'line-dasharray': [0.2, 2],
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-and-line-vertex-stroke-inactive-color-picker',
+            'type': 'circle',
+            'filter': ['all', ['==', 'meta', 'vertex'],
+                ['!=', 'active', 'true'],
+                ['==', '$type', 'Point'],
+                ['!=', 'mode', 'static']
+            ],
+            'paint': {
+                'circle-radius': 5,
+                'circle-color': '#fff'
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-and-line-vertex-inactive-color-picker',
+            'type': 'circle',
+            'filter': ['all', ['==', 'meta', 'vertex'],
+                ['!=', 'active', 'true'],
+                ['==', '$type', 'Point'],
+                ['!=', 'mode', 'static']
+            ],
+            'paint': {
+                'circle-radius': 3,
+                'circle-color': '#fbb03b'
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-and-line-vertex-stroke-active-color-picker',
+            'type': 'circle',
+            'filter': ['all', ['==', 'meta', 'vertex'],
+                ['==', 'active', 'true'],
+                ['==', '$type', 'Point'],
+                ['!=', 'mode', 'static']
+            ],
+            'paint': {
+                'circle-radius': 7,
+                'circle-color': '#fff'
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-and-line-vertex-active-color-picker',
+            'type': 'circle',
+            'filter': ['all', ['==', 'meta', 'vertex'],
+                ['==', 'active', 'true'],
+                ['==', '$type', 'Point'],
+                ['!=', 'mode', 'static']
+            ],
+            'paint': {
+                'circle-radius': 5,
+                'circle-color': '#fbb03b'
+            }
+        },
+        {
+            'id': 'gl-draw-point-point-stroke-inactive-color-picker',
+            'type': 'circle',
+            'filter': ['all', ['==', 'active', 'false'],
+                ['==', '$type', 'Point'],
+                ['==', 'meta', 'feature'],
+                ['!=', 'mode', 'static'],
+                ['has', 'user_portColor']
+            ],
+            'paint': {
+                'circle-radius': 5,
+                'circle-opacity': 1,
+                'circle-color': '#fff'
+            }
+        },
+        {
+            'id': 'gl-draw-point-inactive-color-picker',
+            'type': 'circle',
+            'filter': ['all', ['==', 'active', 'false'],
+                ['==', '$type', 'Point'],
+                ['==', 'meta', 'feature'],
+                ['!=', 'mode', 'static'],
+                ['has', 'user_portColor']
+            ],
+            'paint': {
+                'circle-radius': 3,
+                'circle-color': ['get', 'user_portColor']
+            }
+        },
+        {
+            'id': 'gl-draw-point-stroke-active-color-picker',
+            'type': 'circle',
+            'filter': ['all', ['==', '$type', 'Point'],
+                ['==', 'active', 'true'],
+                ['!=', 'meta', 'midpoint'],
+                ['has', 'user_portColor']
+            ],
+            'paint': {
+                'circle-radius': 7,
+                'circle-color': '#fff'
+            }
+        },
+        {
+            'id': 'gl-draw-point-active-color-picker',
+            'type': 'circle',
+            'filter': ['all', ['==', '$type', 'Point'],
+                ['!=', 'meta', 'midpoint'],
+                ['==', 'active', 'true'],
+                ['has', 'user_portColor']
+            ],
+            'paint': {
+                'circle-radius': 5,
+                'circle-color': ['get', 'user_portColor']
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-fill-static-color-picker',
+            'type': 'fill',
+            'filter': ['all', ['==', 'mode', 'static'],
+                ['==', '$type', 'Polygon'],
+                ['has', 'user_portColor']
+            ],
+            'paint': {
+                'fill-color': ['get', 'user_portColor'],
+                'fill-outline-color': ['get', 'user_portColor'],
+                'fill-opacity': 0.1
+            }
+        },
+        {
+            'id': 'gl-draw-polygon-stroke-static-color-picker',
+            'type': 'line',
+            'filter': ['all', ['==', 'mode', 'static'],
+                ['==', '$type', 'Polygon'],
+                ['has', 'user_portColor']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': ['get', 'user_portColor'],
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-line-static-color-picker',
+            'type': 'line',
+            'filter': ['all', ['==', 'mode', 'static'],
+                ['==', '$type', 'LineString'],
+                ['has', 'user_portColor']
+            ],
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': ['get', 'user_portColor'],
+                'line-width': 2
+            }
+        },
+        {
+            'id': 'gl-draw-point-static-color-picker',
+            'type': 'circle',
+            'filter': ['all',
+                ['==', 'mode', 'static'],
+                ['==', '$type', 'Point'],
+                ['has', 'user_portColor']
+            ],
+            'paint': {
+                'circle-radius': 5,
+                'circle-color': ['get', 'user_portColor']
+            }
+        }
+    ]
 });
 
 var drawTool = document.getElementById('drawAppend');
 drawTool.appendChild(draw.onAdd(map))
 
+// create draw palette
+function populateDrawPalette() {
+    var drawFeatureColor = document.getElementById('customDrawColor');
+
+    for (var c = 0; c < TEXT_COLORS.length; c++) {
+        var cElm = document.createElement('div');
+        cElm.className = 'draw-color-change';
+        cElm.id = 'draw-' + TEXT_COLORS[c];
+        cElm.style['background-color'] = TEXT_COLORS[c];
+        cElm.addEventListener('mousedown', changeDrawColor);
+
+        drawFeatureColor.appendChild(cElm);
+    };
+}
+
+function handlePolygonOrder(clickedFeats) {
+    if (clickedFeats.length > 1) {
+        var tempTrack = trackDrawnPolygons.filter(function(p) {
+            return clickedFeats.indexOf(p) > -1;
+        });
+
+        var lastPoly = tempTrack[tempTrack.length - 1];
+        draw.changeMode('direct_select', { featureId: lastPoly});
+
+        var feat = draw.get(lastPoly);
+        var c = feat.properties.portColor ? feat.properties.portColor : '#fbb03b';
+        handleVerticesColors(c);
+
+    } else if (clickedFeats.length === 1) {
+
+        var feat = draw.get(clickedFeats[0]);
+        var c = feat.properties.portColor ? feat.properties.portColor : '#fbb03b';
+        handleVerticesColors(c);
+    }
+
+    getLastDrawnPoly = false;
+}
 
 
-//// Turf Area Calc
+// vertices and midpoints don't inherit their parent properties
+// so we need to handle those edge cases
+function handleVerticesColors(color) {
+    // midppoints
+    map.setPaintProperty('gl-draw-polygon-midpoint-color-picker.hot', 'circle-color', color);
+    map.setPaintProperty('gl-draw-polygon-midpoint-color-picker.cold', 'circle-color', color);
 
-var calcButton = document.getElementById('calculate');
-calcButton.onclick = function () {
+    // vertices
+    map.setPaintProperty('gl-draw-polygon-and-line-vertex-inactive-color-picker.cold', 'circle-color', color);
+    map.setPaintProperty('gl-draw-polygon-and-line-vertex-inactive-color-picker.hot', 'circle-color', color);
 
-    //FEET
-    if (document.getElementById('feet').checked) {
+    //active vertex
+    map.setPaintProperty('gl-draw-polygon-and-line-vertex-active-color-picker.cold', 'circle-color', color);
+    map.setPaintProperty('gl-draw-polygon-and-line-vertex-active-color-picker.hot', 'circle-color', color);
+}
 
-        var data = draw.getSelected();
-        if (data.features.length > 0) {
-            var area = turf.area(data) / 0.09290304;
-            // restrict to 2 decimal points
-            var rounded_area = Math.round(area * 100) / 100;
-            var answer = document.getElementById('calculated-area');
-            answer.innerHTML = '<p>' + rounded_area + ' ft<sup>2</sup></p>';
-        } if (data.features.length > 0) {
-            var length = turf.lineDistance(data, 'meters') / 0.3048;
-            // restrict to 2 decimal points
-            var rounded_length = Math.round(length * 100) / 100;
-            var answer = document.getElementById('calculated-length');
-            answer.innerHTML = '<p>' + rounded_length + ' ft</p>';
+// color change function of draw features
+var changeDrawColor = function(e) {
+
+    if (e.target.id && e.target.id.indexOf('draw-') === -1) return;
+
+    var color = e.target.id.replace(/draw-/, '');
+
+    if (drawFeatureID !== '' && typeof draw === 'object') {
+
+        draw.setFeatureProperty(drawFeatureID, 'portColor', color);
+        var feat = draw.get(drawFeatureID);
+        draw.add(feat);
+
+       // race conditions exist between events
+       // and draw's transitions between .hot and .cold layers
+       setTimeout(function(){
+           handleVerticesColors(color);
+       }, 50);
+    }
+
+};
+
+// callback for draw.update and draw.selectionchange
+var setDrawFeature = function(e) {
+    if (e.features.length && e.features[0].type === 'Feature') {
+        var feat = e.features[0];
+        drawFeatureID = feat.id;
+
+        if (feat.geometry.type === 'Polygon' && trackDrawnPolygons.length > 1 && draw.getMode() !== 'draw_polygon' &&
+            feat.id !== trackDrawnPolygons[trackDrawnPolygons.length - 1]) {
+                getLastDrawnPoly = true;
         } else {
-            alert("Draw or Select a Line or Polygon before calculating!");
+            var c = feat.properties.portColor ? feat.properties.portColor : '#fbb03b';
+
+            // race conditions exist between events
+            // and draw's transitions between .hot and .cold layers
+            setTimeout(function(){
+                handleVerticesColors(c);
+            }, 50);
         }
-
-
-        //METER
-    } else if (document.getElementById('meter').checked) {
-
-        var data = draw.getSelected();
-        if (data.features.length > 0) {
-            var area = turf.area(data);
-            // restrict to 2 decimal points
-            var rounded_area = Math.round(area * 100) / 100;
-            var answer = document.getElementById('calculated-area');
-            answer.innerHTML = '<p>' + rounded_area + ' m<sup>2</sup></p>';
-        } if (data.features.length > 0) {
-            var length = turf.lineDistance(data, 'meters');
-            // restrict to 2 decimal points
-            var rounded_length = Math.round(length * 100) / 100;
-            var answer = document.getElementById('calculated-length');
-            answer.innerHTML = '<p>' + rounded_length + ' m</p>';
-        } else {
-            alert("Draw or Select a Line or Polygon before calculating!");
-        }
-
-        //MILE
-    } else if (document.getElementById('mile').checked) {
-
-        var data = draw.getSelected();
-        if (data.features.length > 0) {
-            var area = turf.area(data) / 2589988.11;
-            // restrict to 4 decimal points
-            var rounded_area = Math.round(area * 10000) / 10000;
-            var answer = document.getElementById('calculated-area');
-            answer.innerHTML = '<p>' + rounded_area + ' mi<sup>2</sup></p>';
-        } if (data.features.length > 0) {
-            var length = turf.lineDistance(data, 'meters') / 1609.344;
-            // restrict  to 2 decimal points
-            var rounded_length = Math.round(length * 100) / 100;
-            var answer = document.getElementById('calculated-length');
-            answer.innerHTML = '<p>' + rounded_length + ' mi</p>';
-        } else {
-            alert("Draw or Select a Line or Polygon before calculating!");
-        }
-
-        //KILOMETER
-    } else if (document.getElementById('kilometer').checked) {
-
-        var data = draw.getSelected();
-        if (data.features.length > 0) {
-            var area = turf.area(data) / 1000000;
-            // restrict to 4 decimal points
-            var rounded_area = Math.round(area * 10000) / 10000;
-            var answer = document.getElementById('calculated-area');
-            answer.innerHTML = '<p>' + rounded_area + ' km<sup>2</sup></p>';
-        } if (data.features.length > 0) {
-            var length = turf.lineDistance(data, 'meters') / 1000;
-            // restrict to 2 decimal points
-            var rounded_length = Math.round(length * 100) / 100;
-            var answer = document.getElementById('calculated-length');
-            answer.innerHTML = '<p>' + rounded_length + ' km</p>';
-        } else {
-            alert("Draw or Select a Line or Polygon before calculating!");
-        }
-
-        //ACRE
-    } else if (document.getElementById('acre').checked) {
-
-        var data = draw.getSelected();
-        if (data.features.length > 0) {
-            var area = turf.area(data) / 4046.85642;
-            // restrict  to 4 decimal points
-            var rounded_area = Math.round(area * 10000) / 10000;
-            var answer = document.getElementById('calculated-area');
-            answer.innerHTML = '<p>' + rounded_area + ' acres</p>';
-        }
-        if (data.features.length > 0) {
-            var length = turf.lineDistance(data, 'meters') / 0.3048;
-            // restrict to 2 decimal points
-            var rounded_length = Math.round(length * 100) / 100;
-            var answer = document.getElementById('calculated-length');
-            answer.innerHTML = '<p>' + rounded_length + ' ft</p>';
-        } else {
-            alert("Draw or Select a Line or Polygon before calculating!");
-        }
-
     }
 };
 
+// Event Handlers for Draw Tools
+map.on('draw.create', function(e) {
+    newDrawFeature = true;
+    if (e.features.length && e.features[0].geometry.type === 'Polygon') {
+        trackDrawnPolygons.push(e.features[0].id);
+    }
+});
+
+// track handling for polygon features
+map.on('draw.delete', function(e) {
+    if (e.features.length) {
+        var feats = e.features;
+        var featsToRemove = [];
+
+        for (var i = feats.length - 1; i >= 0; i--) {
+            featsToRemove.push(feats[i].id);
+        }
+
+        var tempTrack = trackDrawnPolygons.filter(function(p) {
+            return featsToRemove.indexOf(p) < 0;
+        });
+
+        trackDrawnPolygons = tempTrack;
+    }
+});
+
+map.on('draw.update', setDrawFeature);
+map.on('draw.selectionchange', setDrawFeature);
+
+map.on('click', function(e) {
+    if (getLastDrawnPoly) {
+        var clickedFeats = draw.getFeatureIdsAt(e.point);
+        handlePolygonOrder(clickedFeats);
+    } else if (!newDrawFeature) {
+
+        handleVerticesColors('#fbb03b');
+        var drawFeatureAtPoint = draw.getFeatureIdsAt(e.point);
+
+        //if another drawFeature is not found - reset drawFeatureID
+        drawFeatureID = drawFeatureAtPoint.length ? drawFeatureAtPoint[0] : '';
+    }
+
+    newDrawFeature = false;
+});
 
 
+//// Turf Area Calc
+var selectedUnits = '';
+var selectedMeasuredFeature = '';
+var measurementActive = false;
 
+
+function removeMeasurementValues() {
+    $('#calculated-area p').remove();
+    $('#calculated-length p').remove();
+}
+
+function calculateDimensions(data) {
+    if (!data.id) return;
+
+    var area, rounded_area, areaAnswer, length, rounded_length, lineAnswer;
+    //FEET
+    if (selectedUnits === 'feet') {
+
+        area = turf.area(data) / 0.09290304;
+        // restrict to 2 decimal points
+        rounded_area = Math.round(area * 100) / 100;
+        areaAnswer = document.getElementById('calculated-area');
+        areaAnswer.innerHTML = '<p>' + rounded_area + ' ft<sup>2</sup></p>';
+
+        length = turf.lineDistance(data, 'meters') / 0.3048;
+        // restrict to 2 decimal points
+        rounded_length = Math.round(length * 100) / 100;
+        lineAnswer = document.getElementById('calculated-length');
+        lineAnswer.innerHTML = '<p>' + rounded_length + ' ft</p>';
+
+    //METER
+    } else if (selectedUnits === 'meter') {
+
+        area = turf.area(data);
+        // restrict to 2 decimal points
+        rounded_area = Math.round(area * 100) / 100;
+        areaAnswer = document.getElementById('calculated-area');
+        areaAnswer.innerHTML = '<p>' + rounded_area + ' m<sup>2</sup></p>';
+
+        length = turf.lineDistance(data, 'meters');
+        // restrict to 2 decimal points
+        rounded_length = Math.round(length * 100) / 100;
+        lineAnswer = document.getElementById('calculated-length');
+        lineAnswer.innerHTML = '<p>' + rounded_length + ' m</p>';
+
+     //MILE
+    } else if (selectedUnits === 'mile') {
+
+        area = turf.area(data) / 2589988.11;
+        // restrict to 4 decimal points
+        rounded_area = Math.round(area * 10000) / 10000;
+        areaAnswer = document.getElementById('calculated-area');
+        areaAnswer.innerHTML = '<p>' + rounded_area + ' mi<sup>2</sup></p>';
+
+        length = turf.lineDistance(data, 'meters') / 1609.344;
+        // restrict  to 2 decimal points
+        rounded_length = Math.round(length * 100) / 100;
+        lineAnswer = document.getElementById('calculated-length');
+        lineAnswer.innerHTML = '<p>' + rounded_length + ' mi</p>';
+
+    //KILOMETER
+    } else if (selectedUnits === 'kilometer') {
+
+        area = turf.area(data) / 1000000;
+        // restrict to 4 decimal points
+        rounded_area = Math.round(area * 10000) / 10000;
+        areaAnswer = document.getElementById('calculated-area');
+        areaAnswer.innerHTML = '<p>' + rounded_area + ' km<sup>2</sup></p>';
+
+        length = turf.lineDistance(data, 'meters') / 1000;
+        // restrict to 2 decimal points
+        rounded_length = Math.round(length * 100) / 100;
+        lineAnswer = document.getElementById('calculated-length');
+        lineAnswer.innerHTML = '<p>' + rounded_length + ' km</p>';
+
+    //ACRE
+    } else if (selectedUnits === 'acre') {
+
+        area = turf.area(data) / 4046.85642;
+        // restrict  to 4 decimal points
+        rounded_area = Math.round(area * 10000) / 10000;
+        areaAnswer = document.getElementById('calculated-area');
+        areaAnswer.innerHTML = '<p>' + rounded_area + ' acres</p>';
+
+        length = turf.lineDistance(data, 'meters') / 0.3048;
+        // restrict to 2 decimal points
+        rounded_length = Math.round(length * 100) / 100;
+        lineAnswer = document.getElementById('calculated-length');
+        lineAnswer.innerHTML = '<p>' + rounded_length + ' ft</p>';
+
+    }
+}
+
+// callback fires on the events listed below and fires the
+// above calculateDimensions function
+var calculateCallback = function(e) {
+    if (e.features.length && (e.features[0].geometry.type === 'Polygon' || e.features[0].geometry.type === 'LineString')) {
+        measurementActive = true;
+        selectedMeasuredFeature = e.features[0].id;
+        calculateDimensions(e.features[0]);
+    }
+}
+
+map.on('draw.create', calculateCallback);
+map.on('draw.update', calculateCallback);
+map.on('draw.selectionchange', calculateCallback);
+
+map.on('draw.delete', function(e) {
+    selectedMeasuredFeature = '';
+    measurementActive = false;
+    removeMeasurementValues();
+});
+
+// apparently there's no method to track/watch a drag or vertex
+// of a newly instantiated feature that has yet to be 'created'
+// or perhaps it's not documented anywhere in GL Draw
+// so we have to make our own
+map.on('mousemove', function(e) {
+    if (draw.getMode() === 'draw_line_string' || draw.getMode() === 'draw_polygon') {
+       var linePts = draw.getFeatureIdsAt(e.point);
+
+        if (linePts.length) {
+            // some draw features return back as undefined
+            var activeID = linePts.filter(function(feat) {
+                return typeof feat === 'string';
+            })
+
+            if (activeID.length) {
+                measurementActive = true;
+                selectedMeasuredFeature = activeID[0];
+
+                var fc = draw.get(selectedMeasuredFeature);
+                calculateDimensions(fc);
+            }
+        }
+    } else if (draw.getMode() === 'direct_select' && selectedMeasuredFeature !== '') {
+        var fc = draw.get(selectedMeasuredFeature);
+
+        if (fc.geometry.type === 'LineString' || fc.geometry.type === 'Polygon') {
+            calculateDimensions(fc);
+        }
+
+    }
+});
+
+// remove measurements from input
+map.on('click', function(e){
+    if (measurementActive) {
+        var measuredFeature = draw.getFeatureIdsAt(e.point);
+
+        if (measuredFeature.length) {
+            // some draw features return back as undefined
+            var mF = measuredFeature.filter(function(feat) {
+                return typeof feat === 'string';
+            })
+
+            selectedMeasuredFeature = mF.length ? mF[0] : '';
+
+        } else {
+            removeMeasurementValues();
+        }
+    } else {
+        removeMeasurementValues();
+    }
+
+    measurementActive = false;
+});
+
+
+$(function(){
+    // set unit value
+    selectedUnits = $('input[type=radio][name=unit]:checked').val();
+
+    $('input[type=radio][name=unit]').change(function() {
+        selectedUnits = this.value;
+
+        //update values based on new units
+        if (selectedMeasuredFeature !== '' || measurementActive) {
+            var gj = draw.get(selectedMeasuredFeature);
+            calculateDimensions(gj);
+        }
+    })
+
+    populateDrawPalette();
+});
