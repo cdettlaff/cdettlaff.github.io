@@ -104,6 +104,62 @@ map.on('load', function () {
 
 });
 
+//Enter Lat Long
+//Enter Lat Long
+//Enter Lat Long
+
+map.on('load', function () {
+
+    $(document).ready(function () {
+
+
+        //clear
+        $('#findLLButtonClear').click(function () {
+
+            map.removeLayer("enterLL");
+            map.removeSource("enterLL");
+
+            if (map.getLayer("enterLL")) {
+                map.removeLayer("enterLL");
+                map.removeSource("enterLL");
+            }
+
+        });
+
+        //create
+        $('#findLLButton').click(function () {
+
+            var enterLng = +document.getElementById('lngInput').value
+            var enterLat = +document.getElementById('latInput').value
+
+            var enterLL = turf.point([enterLng, enterLat]);
+
+            map.addSource('enterLL', {
+                type: 'geojson',
+                data: enterLL
+            });
+
+            map.addLayer({
+                id: 'enterLL',
+                type: 'circle',
+                source: 'enterLL',
+                layout: {
+
+                },
+                paint: {
+                    "circle-color": 'red',
+                    "circle-radius": 8,
+                },
+            });
+
+            map.flyTo({
+                center: [enterLng, enterLat]
+            });
+
+        });
+    });
+});
+
 // Coordinates Tool
 // Coordinates Tool
 // Coordinates Tool
@@ -1680,7 +1736,7 @@ var draw = new MapboxDraw({
 });
 
 var drawTool = document.getElementById('drawAppend');
-drawTool.appendChild(draw.onAdd(map))
+drawTool.appendChild(draw.onAdd(map)).setAttribute("style", "display: inline-flex;", "border: 0;");
 
 // create draw palette
 function populateDrawPalette() {
