@@ -9,7 +9,7 @@ var map = new mapboxgl.Map({
     preserveDrawingBuffer: true,
 });
 
-// handles click/touch event across devices 
+//onclick support for mobile devices  
 let touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
 
 // navigation controls
@@ -22,19 +22,24 @@ map.addControl(new mapboxgl.ScaleControl({
     position: 'bottom-right'
 }));
 
-// geolocate control
-map.addControl(new mapboxgl.GeolocateControl());
+// geolocation 
+map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+    trackUserLocation: true
+}));
 
-//This overides the Bootstrap modal "enforceFocus" to allow user interaction with main map
+//This overides the Bootstrap modal "enforceFocus" to allow user interaction with main map 
 $.fn.modal.Constructor.prototype.enforceFocus = function () { };
 
-// print function
+// print function 
 var printBtn = document.getElementById('mapboxgl-ctrl-print');
 var exportView = document.getElementById('export-map');
 
 var printOptions = {
-    disclaimer: "print output disclaimer",
-    northArrow: 'assets/plugins/print-export/north_arrow.svg'
+    disclaimer: "Port of Portland geospatial data is gathered, maintained and primarily used for internal reference and analysis, and is only updated as resources permit. Geospatial data refers to data and information referenced to a location on the Earth's surface such as maps, charts, air photos, satellite images, cadastre and land and water surveys, in digital or hard copy form. Geospatial data may be gathered and maintained by more than one person or department within the Port, and data distributed by one person or department may not reflect the most recent data available from the Port or from other sources. Port geospatial data is not intended for survey or engineering purposes or to describe the authoritative or precise location of boundaries, fixed human works, or the shape and contour of the earth. The Port makes no warranty of any kind, expressed or implied, including any warranty of merchantability, fitness for a particular purpose, or any other matter with respect to its geospatial data. The Port is not responsible for possible errors, omissions, misuse, or misrepresentation of its geospatial data. Port geospatial data is not intended as a final determination of such features as existing or proposed infrastructure, conservation areas, or the boundaries of regulated areas such as wetlands, all of which are subject to surveying or delineation and may change over time. No representation is made concerning the legal status of any apparent route of access identified in geospatial data. The foregoing disclaimer applies to uses of Port geospatial data in any context, including online access at Port workstations, remote access, or use in downloaded digital or hard copy form.",
+    northArrow: 'assets/libs/print-export/north_arrow.svg'
 }
 
 printBtn.onclick = function (e) {
@@ -67,7 +72,7 @@ $('#clear_general').on('click', function (e) {
 });
 
 // Geocoder API
-// Geocoder API
+// Geocoder API 
 // Geocoder API
 var geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken
@@ -90,12 +95,11 @@ map.on('load', function () {
         "source": "geocode-point",
         "type": "circle",
         "paint": {
-            "circle-radius": 20,
-            "circle-color": "dodgerblue",
-            'circle-opacity': 0.5,
-            'circle-stroke-color': 'white',
-            'circle-stroke-width': 3,
+            "circle-radius": 10,
+            "circle-color": "cyan",
+            'circle-opacity': .75,
         }
+
     });
 
     geocoder.on('result', function (ev) {
@@ -134,6 +138,11 @@ map.on('load', function () {
 
             var enterLL = turf.point([enterLng, enterLat]);
 
+            if (map.getLayer("enterLL")) {
+                map.removeLayer("enterLL");
+                map.removeSource("enterLL");
+            }
+           
             map.addSource('enterLL', {
                 type: 'geojson',
                 data: enterLL
@@ -143,12 +152,10 @@ map.on('load', function () {
                 id: 'enterLL',
                 type: 'circle',
                 source: 'enterLL',
-                layout: {
-
-                },
                 paint: {
-                    "circle-color": 'red',
-                    "circle-radius": 8,
+                    "circle-radius": 10,
+                    "circle-color": "cyan",
+                    'circle-opacity': .75,
                 },
             });
 
@@ -160,12 +167,39 @@ map.on('load', function () {
     });
 });
 
-// Coordinates Tool
-// Coordinates Tool
-// Coordinates Tool
+
+// Coordinates & Elevation Tool
+// Coordinates & Elevation Tool
+// Coordinates & Elevation Tool
+
 map.on(touchEvent, function (e) {
+    //coordinates tool
     document.getElementById('info').innerHTML =
         JSON.stringify(e.lngLat, function (key, val) { return val.toFixed ? Number(val.toFixed(4)) : val; }).replace('{"lng":', '').replace('"lat":', ' ').replace('}', '')
+
+});
+
+//sky and terrain layer
+//sky and terrain layer
+//sky and terrain layer
+map.on('load', function () {
+    // map.addSource('mapbox-dem', {
+    //     'type': 'raster-dem',
+    //     'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+    //     'tileSize': 512,
+    //     'maxzoom': 14
+    // });
+    // map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
+
+    map.addLayer({
+        'id': 'sky',
+        'type': 'sky',
+        'paint': {
+            'sky-type': 'atmosphere',
+            'sky-atmosphere-sun': [0.0, 0.0],
+            'sky-atmosphere-sun-intensity': 15
+        }
+    });
 });
 
 //Layer Tree
@@ -194,7 +228,7 @@ map.on('load', function () {
         "type": "fill",
         "source": "monster",
         "layout": {
-           //"visibility": 'none'
+      //"visibility": 'none'
         },
         "paint": {
             'fill-color': '#b30000',
@@ -220,7 +254,7 @@ map.on('load', function () {
         "type": "line",
         "source": "water-line",
         "layout": {
-           // "visibility": 'none'
+            // "visibility": 'none'
         },
         "paint": {
             'line-color': '#0099ff',
@@ -315,7 +349,7 @@ map.on('load', function () {
         "type": "fill",
         "source": "country",
         "layout": {
-           //"visibility": 'none'
+            "visibility": 'none'
         },
         "paint": {
             'fill-color': '#595959',
@@ -412,12 +446,40 @@ map.on('load', function () {
             feature = map.queryRenderedFeatures(e.point, { layers: ['country'] })[0];
 
             append.innerHTML +=
-              '<h5>Country</h5>' +
+              '<h5>Pavement Test</h5>' +
               '<hr>' +
-              '<b>Port Name </b>' + feature.properties.admin +
+              '<b>Survey Quality: </b>' + feature.properties.loc_survey_quality_cd_resolved +
               '<hr>' +
-              '<b>Code: </b>' + feature.properties.adm0_a3 +
-              '<hr>'
+              '<b>Pavement Location: </b>' + feature.properties.pavement_loc_cd_resolved +
+              '<hr>' +
+              '<b>Lifecycle Status: </b>' + feature.properties.lifecycle_status_cd_resolved +
+              '<hr>' +
+              '<b>Network ID: </b>' + feature.properties.network_id +
+              '<hr>' +
+              '<b>Branch ID: </b>' + feature.properties.branch_id +
+              '<hr>' +
+              '<b>Section ID: </b>' + feature.properties.section_id +
+              '<hr>' +
+              '<b>PID: </b>' + feature.properties.pid +
+              '<hr>' +
+              '<b>PCI: </b>' + feature.properties.PCI +
+              '<hr>' +
+              '<b>Square Footage: </b>' + feature.properties.FMEArea +
+              '<hr>' +
+              '<b>Square Footage: </b>' + feature.properties.FMEArea +
+              '<hr>' +
+              '<b>Work History 1: </b>' + feature.properties.WorkHistory_1 +
+              '<hr>' +
+              '<b>Work History 2: </b>' + feature.properties.WorkHistory_2 +
+              '<hr>' +
+              '<b>Work History 3: </b>' + feature.properties.WorkHistory_3 +
+              '<hr>' +
+              '<b>Work History 4: </b>' + feature.properties.WorkHistory_4 +
+              '<hr>' +
+              '<b>Work History 5: </b>' + feature.properties.WorkHistory_5 +
+              '<hr>' +
+              '<b>Work History 6: </b>' + feature.properties.WorkHistory_6 +
+              '<hr>' 
         }
 
         //Monster - Layer Info
@@ -429,7 +491,7 @@ map.on('load', function () {
             append.innerHTML +=
                   '<h5>Monster Info</h5>' +
                   '<hr>' +
-                  '<b>Name: </b>' + 'Mr. Claw'+
+                  '<b>Name: </b>' + 'Mr. Claw' +
                   '<hr>' +
                   '<b>Place of Birth: </b>' + 'Atlantic Ocean' +
                   '<hr>' +
@@ -668,7 +730,7 @@ var layers =
         'name': 'Mr Claw',
         'id': 'monster_group',
         'hideLabel': ['mouth', 'water-line', 'eyes', 'monster'],
-        'icon': 'assets/images/layer-stack-15.svg',
+        'icon': 'assets/images/icons/layer-stack-15.svg',
         'layerGroup': [
             {
                 'id': 'monster',
@@ -705,7 +767,7 @@ var layers =
         'name': 'Mr. Octo',
         'id': 'monster_group_2',
         'hideLabel': ['octo', 'water-line-2', 'eyes2', 'mouth2'],
-        'icon': 'assets/images/layer-stack-15.svg',
+        'icon': 'assets/images/icons/layer-stack-15.svg',
         'layerGroup': [
             {
                 'id': 'octo',
@@ -742,14 +804,14 @@ var layers =
         'name': 'Populated Places',
         'id': 'populated',
         'source': "populated",
-        'path': 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_populated_places_simple.geojson',
+        'path': 'assets/json/ne_50m_populated_places_simple.geojson',
         'directory': 'Cultural',
     },
     {
         'name': 'Countries',
         'id': 'country',
         'source': 'country',
-        'path': 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_map_units.geojson',
+        'path': 'assets/json/ne_110m_admin_0_map_units.geojson',
         'directory': 'Cultural',
     },
 
@@ -761,14 +823,14 @@ var layers =
         'name': 'Major Rivers',
         'id': 'river',
         'source': 'river',
-        'path': 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_rivers_lake_centerlines.geojson',
+        'path': 'assets/json/ne_110m_rivers_lake_centerlines.geojson',
         'directory': 'Physical',
     },
     {
         'name': 'Oceans',
         'id': 'ocean',
         'source': 'ocean',
-        'path': 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_geography_marine_polys.geojson',
+        'path': 'assets/json/ne_110m_geography_marine_polys.geojson',
         'directory': 'Physical',
     },
 
@@ -781,10 +843,9 @@ var layerTool = document.getElementById('menu');
 layerTool.appendChild(layerList.onAdd(map))
 
 
-//BOOKMARKS
-//BOOKMARKS
-//BOOKMARKS
-
+//Bookmarks
+//Bookmarks
+//Bookmarks
 document.getElementById('icelandBookmark').addEventListener('click', function () {
 
     map.flyTo({
@@ -819,6 +880,27 @@ document.getElementById('australiaBookmark').addEventListener('click', function 
 });
 
 
+//3D on/off button
+function threeDbutton(){
+  currentvalue = document.getElementById('threeDbutton').value;
+
+  if (currentvalue == "3D"){
+
+    document.getElementById("threeDbutton").value="3D ";
+    document.getElementById("threeDbutton").style.color = "#2CB5E3";
+    document.getElementById("threeDbutton").style.paddingLeft = "7px";
+    map.flyTo({
+        pitch: 70,
+    });
+ 
+  } else{
+    document.getElementById("threeDbutton").value="3D";
+    document.getElementById("threeDbutton").style.color = "#000";
+    map.flyTo({
+        pitch: 0,
+    });
+  }
+}
 
 //TEXT TOOL
 //TEXT TOOL
@@ -889,14 +971,14 @@ function markerToSymbol(e, elm) {
         var labelGJ = {
             "type": "FeatureCollection",
             "features": [
-              {
-                  "type": "Feature",
-                  "properties": {},
-                  "geometry": {
-                      "type": "Point",
-                      "coordinates": coords
-                  }
-              }
+                {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": coords
+                    }
+                }
             ]
         };
 
@@ -1736,7 +1818,8 @@ var draw = new MapboxDraw({
 });
 
 var drawTool = document.getElementById('drawAppend');
-drawTool.appendChild(draw.onAdd(map)).setAttribute("style", "display: inline-flex;", "border: 0;");
+
+drawTool.appendChild(draw.onAdd(map)).setAttribute("style", "display: inline-flex;", "border: 0;");;
 
 // create draw palette
 function populateDrawPalette() {
@@ -1755,12 +1838,12 @@ function populateDrawPalette() {
 
 function handlePolygonOrder(clickedFeats) {
     if (clickedFeats.length > 1) {
-        var tempTrack = trackDrawnPolygons.filter(function(p) {
+        var tempTrack = trackDrawnPolygons.filter(function (p) {
             return clickedFeats.indexOf(p) > -1;
         });
 
         var lastPoly = tempTrack[tempTrack.length - 1];
-        draw.changeMode('direct_select', { featureId: lastPoly});
+        draw.changeMode('direct_select', { featureId: lastPoly });
 
         var feat = draw.get(lastPoly);
         var c = feat.properties.portColor ? feat.properties.portColor : '#fbb03b';
@@ -1794,7 +1877,7 @@ function handleVerticesColors(color) {
 }
 
 // color change function of draw features
-var changeDrawColor = function(e) {
+var changeDrawColor = function (e) {
 
     if (e.target.id && e.target.id.indexOf('draw-') === -1) return;
 
@@ -1806,30 +1889,30 @@ var changeDrawColor = function(e) {
         var feat = draw.get(drawFeatureID);
         draw.add(feat);
 
-       // race conditions exist between events
-       // and draw's transitions between .hot and .cold layers
-       setTimeout(function(){
-           handleVerticesColors(color);
-       }, 50);
+        // race conditions exist between events
+        // and draw's transitions between .hot and .cold layers
+        setTimeout(function () {
+            handleVerticesColors(color);
+        }, 50);
     }
 
 };
 
 // callback for draw.update and draw.selectionchange
-var setDrawFeature = function(e) {
+var setDrawFeature = function (e) {
     if (e.features.length && e.features[0].type === 'Feature') {
         var feat = e.features[0];
         drawFeatureID = feat.id;
 
         if (feat.geometry.type === 'Polygon' && trackDrawnPolygons.length > 1 && draw.getMode() !== 'draw_polygon' &&
             feat.id !== trackDrawnPolygons[trackDrawnPolygons.length - 1]) {
-                getLastDrawnPoly = true;
+            getLastDrawnPoly = true;
         } else {
             var c = feat.properties.portColor ? feat.properties.portColor : '#fbb03b';
 
             // race conditions exist between events
             // and draw's transitions between .hot and .cold layers
-            setTimeout(function(){
+            setTimeout(function () {
                 handleVerticesColors(c);
             }, 50);
         }
@@ -1837,7 +1920,7 @@ var setDrawFeature = function(e) {
 };
 
 // Event Handlers for Draw Tools
-map.on('draw.create', function(e) {
+map.on('draw.create', function (e) {
     newDrawFeature = true;
     if (e.features.length && e.features[0].geometry.type === 'Polygon') {
         trackDrawnPolygons.push(e.features[0].id);
@@ -1845,7 +1928,7 @@ map.on('draw.create', function(e) {
 });
 
 // track handling for polygon features
-map.on('draw.delete', function(e) {
+map.on('draw.delete', function (e) {
     if (e.features.length) {
         var feats = e.features;
         var featsToRemove = [];
@@ -1854,7 +1937,7 @@ map.on('draw.delete', function(e) {
             featsToRemove.push(feats[i].id);
         }
 
-        var tempTrack = trackDrawnPolygons.filter(function(p) {
+        var tempTrack = trackDrawnPolygons.filter(function (p) {
             return featsToRemove.indexOf(p) < 0;
         });
 
@@ -1865,7 +1948,7 @@ map.on('draw.delete', function(e) {
 map.on('draw.update', setDrawFeature);
 map.on('draw.selectionchange', setDrawFeature);
 
-map.on('click', function(e) {
+map.on('click', function (e) {
     if (getLastDrawnPoly) {
         var clickedFeats = draw.getFeatureIdsAt(e.point);
         handlePolygonOrder(clickedFeats);
@@ -1912,7 +1995,7 @@ function calculateDimensions(data) {
         lineAnswer = document.getElementById('calculated-length');
         lineAnswer.innerHTML = '<p>' + rounded_length + ' ft</p>';
 
-    //METER
+        //METER
     } else if (selectedUnits === 'meter') {
 
         area = turf.area(data);
@@ -1927,7 +2010,7 @@ function calculateDimensions(data) {
         lineAnswer = document.getElementById('calculated-length');
         lineAnswer.innerHTML = '<p>' + rounded_length + ' m</p>';
 
-     //MILE
+        //MILE
     } else if (selectedUnits === 'mile') {
 
         area = turf.area(data) / 2589988.11;
@@ -1942,7 +2025,7 @@ function calculateDimensions(data) {
         lineAnswer = document.getElementById('calculated-length');
         lineAnswer.innerHTML = '<p>' + rounded_length + ' mi</p>';
 
-    //KILOMETER
+        //KILOMETER
     } else if (selectedUnits === 'kilometer') {
 
         area = turf.area(data) / 1000000;
@@ -1957,7 +2040,7 @@ function calculateDimensions(data) {
         lineAnswer = document.getElementById('calculated-length');
         lineAnswer.innerHTML = '<p>' + rounded_length + ' km</p>';
 
-    //ACRE
+        //ACRE
     } else if (selectedUnits === 'acre') {
 
         area = turf.area(data) / 4046.85642;
@@ -1977,7 +2060,7 @@ function calculateDimensions(data) {
 
 // callback fires on the events listed below and fires the
 // above calculateDimensions function
-var calculateCallback = function(e) {
+var calculateCallback = function (e) {
     if (e.features.length && (e.features[0].geometry.type === 'Polygon' || e.features[0].geometry.type === 'LineString')) {
         measurementActive = true;
         selectedMeasuredFeature = e.features[0].id;
@@ -1989,7 +2072,7 @@ map.on('draw.create', calculateCallback);
 map.on('draw.update', calculateCallback);
 map.on('draw.selectionchange', calculateCallback);
 
-map.on('draw.delete', function(e) {
+map.on('draw.delete', function (e) {
     selectedMeasuredFeature = '';
     measurementActive = false;
     removeMeasurementValues();
@@ -1999,13 +2082,13 @@ map.on('draw.delete', function(e) {
 // of a newly instantiated feature that has yet to be 'created'
 // or perhaps it's not documented anywhere in GL Draw
 // so we have to make our own
-map.on('mousemove', function(e) {
+map.on('mousemove', function (e) {
     if (draw.getMode() === 'draw_line_string' || draw.getMode() === 'draw_polygon') {
-       var linePts = draw.getFeatureIdsAt(e.point);
+        var linePts = draw.getFeatureIdsAt(e.point);
 
         if (linePts.length) {
             // some draw features return back as undefined
-            var activeID = linePts.filter(function(feat) {
+            var activeID = linePts.filter(function (feat) {
                 return typeof feat === 'string';
             })
 
@@ -2028,13 +2111,13 @@ map.on('mousemove', function(e) {
 });
 
 // remove measurements from input
-map.on('click', function(e){
+map.on('click', function (e) {
     if (measurementActive) {
         var measuredFeature = draw.getFeatureIdsAt(e.point);
 
         if (measuredFeature.length) {
             // some draw features return back as undefined
-            var mF = measuredFeature.filter(function(feat) {
+            var mF = measuredFeature.filter(function (feat) {
                 return typeof feat === 'string';
             })
 
@@ -2051,11 +2134,11 @@ map.on('click', function(e){
 });
 
 
-$(function(){
+$(function () {
     // set unit value
     selectedUnits = $('input[type=radio][name=unit]:checked').val();
 
-    $('input[type=radio][name=unit]').change(function() {
+    $('input[type=radio][name=unit]').change(function () {
         selectedUnits = this.value;
 
         //update values based on new units
@@ -2067,3 +2150,9 @@ $(function(){
 
     populateDrawPalette();
 });
+
+
+
+
+
+
